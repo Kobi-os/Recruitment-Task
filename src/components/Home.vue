@@ -1,10 +1,24 @@
 <template>
   <div class="home-container">
     <h1 class="title">Algorytm do odkrywania wartości odstającej</h1>
-    <p>Podane przez ciebie wartości mogą się składać wyłącznie z liczb parzystych lub nieparzystych, z wyjątkiem jednej liczby która będzie odbiegać od reszty.
+    <p>Podane przez ciebie wartości mogą się składać wyłącznie z liczb parzystych lub nieparzystych, z wyjątkiem jednej liczby która będzie odbiegać od reszty.</p>
+    
+    <input 
+      v-model="numbers" 
+      class="input" 
+      placeholder="Wpisz liczby po przecinku" 
+    />
+    
+    <button 
+      class="button" 
+      @click="findOutlier"
+    >
+      Wyszukaj
+    </button>
+
+    <p v-if="errorMessage" class="error-message">
+      {{ errorMessage }}
     </p>
-    <input v-model="numbers" class="input" placeholder="Wpisz liczby po przecinku" />
-    <button class="button" @click="findOutlier">Wyszukaj</button>
   </div>
 </template>
 
@@ -12,14 +26,40 @@
 export default {
   data() {
     return {
-      numbers: ""
+      numbers: "",
+      errorMessage: ""
     };
   },
   methods: {
     findOutlier() {
-      const arr = this.numbers.split(",").map(Number);
-      const isEven = arr.slice(0, 3).filter(num => num % 2 === 0).length > 1;
-      const outlier = arr.find(num => (isEven ? num % 2 !== 0 : num % 2 === 0));
+      // Resetuj poprzedni komunikat o błędzie
+      this.errorMessage = "";
+
+      // Konwersja i oczyszczenie wprowadzonych liczb
+      const arr = this.numbers.split(",")
+        .map(num => Number(num.trim()))
+        .filter(num => !isNaN(num));
+
+      // Sprawdzenie, czy wprowadzono liczby
+      if (arr.length === 0) {
+        this.errorMessage = "Proszę wprowadzić liczby.";
+        return;
+      }
+
+      // Sprawdzenie, czy są zarówno liczby parzyste, jak i nieparzyste
+      const evens = arr.filter(num => num % 2 === 0);
+      const odds = arr.filter(num => num % 2 !== 0);
+
+      if (evens.length === 0 || odds.length === 0) {
+        this.errorMessage = "Proszę wprowadzić co najmniej jedną liczbę parzystą i jedną nieparzystą.";
+        return;
+      }
+
+      // Logika znajdowania wartości odstającej
+      const isEven = evens.length === 1;
+      const outlier = isEven ? evens[0] : odds[0];
+      
+      // Nawigacja do strony wyniku
       this.$router.push(`/result/${outlier}`);
     }
   }
@@ -61,5 +101,11 @@ export default {
 
 .button:hover {
   background-color: #0056b3;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+  font-size: 14px;
 }
 </style>
