@@ -32,21 +32,18 @@ export default {
   },
   methods: {
     findOutlier() {
-      // Resetuj poprzedni komunikat o błędzie
+
       this.errorMessage = "";
 
-      // Konwersja i oczyszczenie wprowadzonych liczb
       const arr = this.numbers.split(",")
         .map(num => Number(num.trim()))
         .filter(num => !isNaN(num));
 
-      // Sprawdzenie, czy wprowadzono liczby
       if (arr.length === 0) {
         this.errorMessage = "Proszę wprowadzić liczby.";
         return;
       }
 
-      // Sprawdzenie, czy są zarówno liczby parzyste, jak i nieparzyste
       const evens = arr.filter(num => num % 2 === 0);
       const odds = arr.filter(num => num % 2 !== 0);
 
@@ -55,11 +52,9 @@ export default {
         return;
       }
 
-      // Logika znajdowania wartości odstającej
       const isEven = evens.length === 1;
       const outlier = isEven ? evens[0] : odds[0];
       
-      // Nawigacja do strony wyniku
       this.$router.push(`/result/${outlier}`);
     }
   }
